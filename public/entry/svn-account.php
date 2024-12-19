@@ -6,12 +6,12 @@ require __DIR__ . '/../../vendor/autoload.php';
 require __DIR__ . '/../../include/email-validation.inc';
 require __DIR__ . '/../../include/functions.inc';
 
-$valid_vars = ['name','email','username','passwd','note','group','yesno'];
+$valid_vars = ['name','email','username','passwd','github','note','group','yesno'];
 foreach($valid_vars as $k) {
     if(isset($_REQUEST[$k])) $$k = $_REQUEST[$k];
 }
 
-if (empty($name) || empty($email) || empty($username) || empty($passwd) || empty($note) || empty($group))
+if (empty($name) || empty($email) || empty($username) || empty($passwd) || empty($github) || empty($note) || empty($group))
   die("missing some parameters");
 
 // Sophisticated security/spam protection question
@@ -75,15 +75,16 @@ if ($res)
 $svnpasswd = gen_pass($passwd);
 $note = hsc($note);
 
-$query = "INSERT INTO users (name,email,svnpasswd,username) VALUES (?, ?, ?, ?)";
+$query = "INSERT INTO users (name,email,svnpasswd,username,$github) VALUES (?, ?, ?, ?, ?)";
 try {
-  $pdo->safeQuery($query, [$name, $email, $svnpasswd, $username]);
+  $pdo->safeQuery($query, [$name, $email, $svnpasswd, $username, $github]);
 } catch (\PDOException $e) {
   mail($failto,"VCS Account Request: $username",
       "Failed to insert into database: ".$e->getMessage()."\n\n".
       "Full name: $name\n".
       "Email:     $email\n".
       "ID:        $username\n".
+      "GitHub:    $username\n".
       "Purpose:   $note",
        "From: \"VCS Account Request\" <$email>");
   exit;

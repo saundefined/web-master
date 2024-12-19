@@ -49,6 +49,7 @@ $indesc = [
   "use_sa"           => FILTER_VALIDATE_INT,
   "email"            => FILTER_SANITIZE_EMAIL,
   "name"             => FILTER_SANITIZE_SPECIAL_CHARS,
+  "github"           => FILTER_SANITIZE_SPECIAL_CHARS,
   "sshkey"           => FILTER_SANITIZE_SPECIAL_CHARS,
   "purpose"          => FILTER_SANITIZE_SPECIAL_CHARS,
   "profile_markdown" => FILTER_UNSAFE_RAW,
@@ -139,6 +140,9 @@ if ($in) {
           if (is_admin($_SESSION["username"])) {
               $query->add(',cvsaccess=?', [$cvsaccess]);
           }
+          if (!empty($in['github'])) {
+              $query->add(',github=?', [$in['github']]);
+          }
           $query->add(
             ',spamprotect=?, enable=?, use_sa=?, greylist=?',
             [$spamprotect, $enable, $use_sa, $greylist]);
@@ -197,6 +201,10 @@ if ($id) {
 <?php else: ?>
  <td><?php echo hsc($userdata['username']);?></td>
 <?php endif ?>
+</tr>
+<tr>
+ <th>VCS username:</th>
+ <td><input type="text" name="in[github]" value="<?php echo hsc($userdata['github']);?>" size="39" maxlength="39" /></td>
 </tr>
 <tr>
  <td colspan="2">Leave password fields blank to leave password unchanged.</td>
